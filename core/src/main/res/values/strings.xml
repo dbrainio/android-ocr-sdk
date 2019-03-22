@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Upload</string>
+    <string name="send">Send</string>
+    <string name="uploading">Uploading</string>
+    <string name="notification_channel">Main channel</string>
+    <string name="done">Done</string>
+    <string name="retake">Retake</string>
+    <string name="sending_failed">Sending failed</string>
+    <string name="all_done">All done</string>
+    <string name="sending">Sending...</string>
+</resources>

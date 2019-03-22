@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.dbrain.textrecognizer">
+
+    <application>
+        <activity android:name=".TextCaptureActivity"
+                  android:theme="@style/CoreLibTheme"
+                  android:screenOrientation="portrait">
+        </activity>
+    </application>
+</manifest>

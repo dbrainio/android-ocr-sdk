@@ -1,0 +1,21 @@
+<resources>
+
+    <style name="CoreLibTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
+
+    <style name="roundButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/round_button_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:background">@drawable/button_selector</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+</resources>
