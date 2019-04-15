@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Face Recognizer</string>
+    <string name="move_face">Поверните голову влево или вправо</string>
+</resources>
