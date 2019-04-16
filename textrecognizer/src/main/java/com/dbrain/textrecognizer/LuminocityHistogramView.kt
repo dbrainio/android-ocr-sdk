@@ -144,6 +144,7 @@ class LuminocityHistogramView @JvmOverloads constructor(
         fullPath.lineTo(floatWidth, floatHeight)
         //и замыкаем там, где начали
         fullPath.lineTo(0f, floatHeight)
+        fullPath.close()
 
         canvas.drawPath(fullPath, histogramFillPaint)
         canvas.drawPath(fullPath, histogramStrokePaint)

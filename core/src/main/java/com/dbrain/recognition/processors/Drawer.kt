@@ -22,4 +22,11 @@ abstract class Drawer {
      **/
     abstract fun draw(cropRegionWidth: Int, cropRegionHeight: Int, canvas: Canvas?)
 
+    /**
+     *  This method allows to invalidate OverlayView every single frame instead of new events.
+     *
+     *  Use them for displaying animated custom drawings on canvas.
+     **/
+    open val shouldInvalidateOnNextFrame: Boolean = false
+
 }

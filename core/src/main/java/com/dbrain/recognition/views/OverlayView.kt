@@ -35,5 +35,8 @@ class OverlayView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         drawer?.draw(regionWidth, regionHeight, canvas)
+        if (drawer?.shouldInvalidateOnNextFrame == true) {
+            postInvalidateOnAnimation()
+        }
     }
 }
