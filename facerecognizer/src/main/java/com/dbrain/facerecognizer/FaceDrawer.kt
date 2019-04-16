@@ -70,7 +70,7 @@ class FaceDrawer(context: Context) : Drawer() {
             mask.lineTo(0f, 0f)
             mask.close()
 
-            //а это — замкнутый путь "чуть поменьше"
+            //а это — замкнутый путь "чуть поменьше", который благодаря правилу заполнения evenOdd останется прозрачным
 
             val holeTop = canvasHeight * 0.1f
             val holeLeft = (canvasWidth - holeWidth) / 2

@@ -17,7 +17,7 @@ import android.view.TextureView
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
-import com.dbrain.recognition.R
+import android.widget.TextView
 import com.dbrain.recognition.camera.Camera
 import com.dbrain.recognition.camera.CropParameters
 import com.dbrain.recognition.processors.DataBundle
@@ -40,6 +40,8 @@ abstract class CaptureActivity : AppCompatActivity(),
     private var textureView: AutoFitTextureView? = null
     private var overlayView: OverlayView? = null
     private var rootLayout: FrameLayout? = null
+    private var titleView: TextView? = null
+    private var errorDescriptionView: TextView? = null
     private var shutterButton: Button? = null
     private var preview: PhotoPreview? = null
     private var resultScreen: ResultScreen? = null
@@ -64,6 +66,8 @@ abstract class CaptureActivity : AppCompatActivity(),
     abstract fun getCropRegionParameters(): CropParameters?
 
     protected fun getRootLayout(): FrameLayout? = rootLayout
+    protected fun getTitleView(): TextView? = titleView
+    protected fun getErrorDescriptionView(): TextView? = errorDescriptionView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,8 +75,11 @@ abstract class CaptureActivity : AppCompatActivity(),
         textureView = findViewById(R.id.texture_view)
         overlayView = findViewById(R.id.overlay_view)
         rootLayout = findViewById(R.id.root_layout)
+        titleView = findViewById(R.id.title)
+        errorDescriptionView = findViewById(R.id.error)
         shutterButton = findViewById(R.id.shutter_button)
         shutterButton?.setOnClickListener(this)
+
 
         processor = getProcessor(intent.extras)
         drawer = getDrawer()

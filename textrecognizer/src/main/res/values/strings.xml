@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TextRecognizer</string>
+    <string name="title">Place your &lt;type of ID&gt; within the frame</string>
 </resources>

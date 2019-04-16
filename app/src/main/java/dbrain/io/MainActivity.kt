@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity() {
     fun launchText(v: View) {
         TextRecognizer.Builder(
             TextRecognizer.CAMERA_FACING_BACK,
-            16f,
-            10f,
-            0.8f
+            1f,
+            2f,
+            0.85f
         ).buildAndStart(this)
     }
 
