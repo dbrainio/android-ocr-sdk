@@ -18,6 +18,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.dbrain.recognition.R
 import com.dbrain.recognition.camera.Camera
 import com.dbrain.recognition.camera.CropParameters
 import com.dbrain.recognition.processors.DataBundle
@@ -175,7 +176,7 @@ abstract class CaptureActivity : AppCompatActivity(),
     }
 
     override fun onCameraStarted(previewWidth: Int, previewHeight: Int) {
-
+        drawer?.notifyInCameraView()
     }
 
     override fun onCameraCropRegionSizeSet(cropWidth: Int, cropHeight: Int) {
@@ -197,9 +198,13 @@ abstract class CaptureActivity : AppCompatActivity(),
             this,
             byteArray = byteArray,
             facing = getCameraFacing(),
-            listener = this
+            listener = this,
+            overlayDrawer = drawer,
+            cropWidth = overlayView?.regionWidth ?: 0,
+            cropHeight = overlayView?.regionHeight ?: 0
         )
         rootLayout?.addView(preview)
+        drawer?.notifyPictureTaken()
     }
 
     override fun onClick(v: View?) {

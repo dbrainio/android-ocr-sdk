@@ -42,7 +42,11 @@ class FaceDrawer(context: Context) : Drawer() {
 
     private var strokeStartD = 0f
 
-    override val shouldInvalidateOnNextFrame = true
+    private var inCameraView = false
+    override val shouldInvalidateOnNextFrame: Boolean
+        get() {
+            return inCameraView
+        }
 
 
     override fun draw(cropRegionWidth: Int, cropRegionHeight: Int, canvas: Canvas?) {
@@ -114,9 +118,11 @@ class FaceDrawer(context: Context) : Drawer() {
         strokePartial.rLineTo(0f, 0f) // workaround to display on hardware accelerated canvas as described in docs
 
         canvas.drawPath(mask, maskPaint)
-        canvas.drawPath(strokePartial, strokePaint)
-        if (needToDrawAdditional) {
-            canvas.drawPath(strokePartialAdditional, strokePaint)
+        if (inCameraView) {
+            canvas.drawPath(strokePartial, strokePaint)
+            if (needToDrawAdditional) {
+                canvas.drawPath(strokePartialAdditional, strokePaint)
+            }
         }
 
         if (strokeStartD >= 1f) {
@@ -127,5 +133,13 @@ class FaceDrawer(context: Context) : Drawer() {
     }
 
     override fun receiveEvent(data: DataBundle) = Unit
+
+    override fun notifyInCameraView() {
+        inCameraView = true
+    }
+
+    override fun notifyPictureTaken() {
+        inCameraView = false
+    }
 
 }

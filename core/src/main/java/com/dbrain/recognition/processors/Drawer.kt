@@ -29,4 +29,14 @@ abstract class Drawer {
      **/
     open val shouldInvalidateOnNextFrame: Boolean = false
 
+    /**
+     *  This method allows to do something when return in camera view.
+     **/
+    abstract fun notifyInCameraView()
+
+    /**
+     *  This method allows to do something when user just had taken a picture.
+     **/
+    abstract fun notifyPictureTaken()
+
 }

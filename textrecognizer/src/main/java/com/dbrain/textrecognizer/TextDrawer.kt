@@ -19,6 +19,8 @@ class TextDrawer(context: Context) : Drawer() {
         style = Paint.Style.FILL_AND_STROKE
     }
 
+    private val idPlaceholderDrawable = context.getDrawable(R.drawable.ic_id_placeholder)
+
     private var lastCanvasWidth = 0
     private var lastCanvasHeight = 0
     private var lastCropRegionWidth = 0
@@ -72,11 +74,31 @@ class TextDrawer(context: Context) : Drawer() {
             mask.addRoundRect(cropRegionLeft, secondRectTop, cropRegionRight, secondRectBottom, cornerRadius, cornerRadius, Path.Direction.CCW)
             mask.close()
 
+            idPlaceholderDrawable?.let {
+                //высота — 24% от высоты оверлея
+                val idPlaceholderAspectRatio = it.intrinsicWidth.toFloat() / it.intrinsicHeight
+                val newHeight = ((cropRegionBottom - cropRegionTop) * 0.24f).toInt()
+                val newWidth = (newHeight * idPlaceholderAspectRatio).toInt()
+
+                //отступаем 16% высоты кропа снизу и 10% ширины слева
+                val placeholderLeft = (cropRegionLeft + (cropRegionRight - cropRegionLeft) * 0.1f).toInt()
+                val placeholderRight = (placeholderLeft + newWidth).toInt()
+                val placeholderTop = (cropRegionBottom - (cropRegionBottom - cropRegionTop) * 0.16f - newHeight).toInt()
+                val placeholderBottom = (placeholderTop + newHeight).toInt()
+                it.setBounds(placeholderLeft, placeholderTop, placeholderRight, placeholderBottom)
+            }
+
+
         }
 
         canvas.drawPath(mask, maskPaint)
+        idPlaceholderDrawable?.let { it.draw(canvas) }
     }
 
     override fun receiveEvent(data: DataBundle) = Unit
+
+    override fun notifyInCameraView() = Unit
+
+    override fun notifyPictureTaken() = Unit
 
 }

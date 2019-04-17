@@ -12,11 +12,11 @@ class OverlayView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) :
     View(context, attrs, defStyleAttr) {
-    protected var regionWidth = 0
+    var regionWidth = 0
         private set(v) {
             field = v
         }
-    protected var regionHeight = 0
+    var regionHeight = 0
         private set(v) {
             field = v
         }
