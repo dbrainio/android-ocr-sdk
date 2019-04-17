@@ -11,11 +11,9 @@ import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.dbrain.recognition.R
 import com.dbrain.recognition.processors.Drawer
 import com.dbrain.recognition.utils.dp
-import com.dbrain.recognition.utils.getAppTypeface
 
 class PhotoPreview(
     context: Context,
@@ -96,15 +94,6 @@ class PhotoPreview(
         addView(retakeButton)
     }
 
-    private val sendingText = TextView(context).apply {
-        typeface = getAppTypeface(context)
-        text = context.getString(R.string.sending)
-        setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16f)
-        gravity = Gravity.CENTER
-        setTextColor(0xffffffff.toInt())
-        setBackgroundResource(R.drawable.big_black_rounded_rectangle)
-    }
-
 
     init {
         isClickable = true
@@ -145,15 +134,7 @@ class PhotoPreview(
     }
 
     private fun showSending() {
-        removeView(sendButton)
-        addView(sendingText, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            dp(120f, context).toInt(),
-            Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        ).apply {
-            bottomMargin = dp(16f, context).toInt()
-            leftMargin = dp(24f, context).toInt()
-            rightMargin = dp(24f, context).toInt()
-        })
+        sendButton.isEnabled = false
+        sendButton.setText(R.string.loading)
     }
 }

@@ -7,10 +7,11 @@
     <string name="retake">Retake</string>
     <string name="sending_failed">Sending failed</string>
     <string name="all_done">All done</string>
-    <string name="sending">Sending...</string>
+    <string name="loading">Loading…</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="confirmation_title">Are the details clearly visible?</string>
     <string name="confirmation_submit">Yes, submit</string>
     <string name="confirmation_retake">No, re-take photo</string>
+
 
 </resources>
