@@ -116,7 +116,7 @@ class PhotoPreview(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 Gravity.BOTTOM
             ).apply {
-                bottomMargin = dp(96f, context).toInt()
+                bottomMargin = dp(80f, context).toInt()
             }
         )
 

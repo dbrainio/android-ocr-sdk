@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Face Recognizer</string>
-    <string name="move_face">Поверните голову влево или вправо</string>
-    <string name="title">Take a selfie</string>
+    <string name="face_recognizer_title">Take a selfie</string>
+    <string name="no_face_detected">Your beautiful face doesn\'t fit into the frame</string>
+    <string name="turn_head_straight">Turn your head straight</string>
+    <string name="turn_head_left">Turn your head left</string>
+    <string name="turn_head_right">Turn your head right</string>
+
 </resources>

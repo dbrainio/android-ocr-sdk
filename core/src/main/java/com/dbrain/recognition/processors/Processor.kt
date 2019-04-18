@@ -43,6 +43,11 @@ abstract class Processor(val context: Context, val listener: Listener?) {
     protected abstract fun close()
 
     /**
+     * Method to notify processor that image had been captured. May be used to reset internal state.
+     **/
+    abstract fun notifyPictureTaken()
+
+    /**
      * Process image in this method.
      * @param croppedBitmap cropped region of the original image. NULL if crop region is undefined.
      * @param originalByteArray yuv data directly from camera.

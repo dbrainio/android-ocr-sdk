@@ -205,6 +205,7 @@ abstract class CaptureActivity : AppCompatActivity(),
         )
         rootLayout?.addView(preview)
         drawer?.notifyPictureTaken()
+        processor?.notifyPictureTaken()
     }
 
     override fun onClick(v: View?) {

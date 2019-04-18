@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "924046701967",
+    "firebase_url": "https://dbrain-ocr-sdk.firebaseio.com",
+    "project_id": "dbrain-ocr-sdk",
+    "storage_bucket": "dbrain-ocr-sdk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924046701967:android:b99c1f960b51f106",
+        "android_client_info": {
+          "package_name": "com.dbrain.facerecognizer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "924046701967-9iuag0egchv42pr9t6vni0vdq7df3ph9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRX8c9nZ7qEG87CVveRBZtlLS8b8zuMnc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "924046701967-9iuag0egchv42pr9t6vni0vdq7df3ph9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

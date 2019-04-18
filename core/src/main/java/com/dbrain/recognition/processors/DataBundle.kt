@@ -5,5 +5,5 @@ package com.dbrain.recognition.processors
  * You can inherit from this class to pass your custom data.
  */
 open class DataBundle(
-    var detected: Boolean = false
+    open var detected: Boolean = false
 )

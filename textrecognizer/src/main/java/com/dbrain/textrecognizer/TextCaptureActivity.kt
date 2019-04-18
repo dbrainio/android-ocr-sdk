@@ -23,7 +23,7 @@ class TextCaptureActivity : CaptureActivity() {
         }
 
         super.onCreate(savedInstanceState)
-        getTitleView()?.setText(R.string.title)
+        getTitleView()?.setText(R.string.text_recognizer_title)
     }
 
 

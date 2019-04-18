@@ -24,13 +24,29 @@ class FaceCaptureActivity : CaptureActivity() {
             cropParameters = CropParameters(cropX, cropY, cropScale)
         }
         super.onCreate(savedInstanceState)
-        getTitleView()?.setText(R.string.title)
-        getErrorDescriptionView()?.setText(R.string.move_face)
+        getTitleView()?.setText(R.string.face_recognizer_title)
     }
 
     override fun onProcessorEvent(dataBundle: DataBundle) {
         super.onProcessorEvent(dataBundle)
-        getErrorDescriptionView()?.visibility = if (dataBundle.detected) View.VISIBLE else View.INVISIBLE
+        if (dataBundle is FaceDataBundle) {
+            getErrorDescriptionView()?.let {
+                val textResource = when (dataBundle.state) {
+                    FaceDataBundle.STATE_NO_FACE_DETECTED -> R.string.no_face_detected
+                    FaceDataBundle.STATE_DETECTED_NOT_FULL, FaceDataBundle.STATE_DETECTED_TURNED_RIGHT_AFTER_LEFT_AND_FULL -> R.string.turn_head_straight
+                    FaceDataBundle.STATE_DETECTED_FULL_NOT_CHECKED -> R.string.turn_head_left
+                    FaceDataBundle.STATE_DETECTED_TURNED_LEFT_AFTER_FULL -> R.string.turn_head_right
+                    else -> null
+                }
+                if (textResource != null) {
+                    it.setText(textResource)
+                } else {
+                    it.text = null
+                }
+
+                it.visibility = if (dataBundle.detected) View.INVISIBLE else View.VISIBLE
+            }
+        }
     }
 
 }

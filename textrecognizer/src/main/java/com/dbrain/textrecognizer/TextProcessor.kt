@@ -1,7 +1,8 @@
 package com.dbrain.textrecognizer
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.ImageFormat
 import android.os.Bundle
 import android.util.Log
 import com.dbrain.recognition.DBrainBuilder
@@ -121,6 +122,8 @@ class TextProcessor(
         }
 
     }
+
+    override fun notifyPictureTaken() = Unit
 
     private fun sendHistogram(detectedText: Boolean) {
 
