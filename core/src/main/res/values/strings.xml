@@ -12,6 +12,7 @@
     <string name="confirmation_title">Are the details clearly visible?</string>
     <string name="confirmation_submit">Yes, submit</string>
     <string name="confirmation_retake">No, re-take photo</string>
+    <string name="ok">OK</string>
 
 
 </resources>

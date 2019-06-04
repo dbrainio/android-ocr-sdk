@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/root_layout"
+        android:layout_height="match_parent">
+
+    <com.dbrain.recognition.views.AutoFitTextureView
+            android:id="@+id/texture_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:layout_marginBottom="96dp">
+
+        <com.dbrain.recognition.views.AppTypefaceTextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:gravity="center_horizontal"
+                android:textSize="20dp"
+                android:textColor="#000000"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                tools:text="Title"
+                />
+
+        <com.dbrain.recognition.views.AppTypefaceTextView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:gravity="center_horizontal"
+                android:textSize="14dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:textColor="#EB008D"
+                android:visibility="invisible"
+                tools:text="Error description"
+                />
+
+    </LinearLayout>
+
+    <com.dbrain.recognition.views.AppTypefaceButton
+            android:id="@+id/shutter_button"
+            style="@style/roundButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:enabled="false"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:textColor="#FFFFFF"
+            android:text="@string/take_a_photo"
+            />
+
+    <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:indeterminateTint="@android:color/white"
+            android:indeterminateTintMode="src_in"
+            android:padding="4dp"
+            android:visibility="invisible"
+            />
+
+    <FrameLayout
+            android:id="@+id/results"
+            android:background="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible">
+
+        <ImageView
+                android:id="@+id/result"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        <com.dbrain.recognition.views.AppTypefaceButton
+                android:id="@+id/close_results"
+                style="@style/roundButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:gravity="center"
+                android:textSize="16dp"
+                android:textColor="#FFFFFF"
+                android:text="@string/ok"
+                />
+
+    </FrameLayout>
+
+</FrameLayout>

@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.dbrain.thickness">
+
+    <application>
+        <activity android:name=".ThicknessDetectionCaptureActivity"
+                  android:theme="@style/CoreLibTheme"
+                  android:screenOrientation="portrait">
+        </activity>
+
+        <service android:name="com.dbrain.thickness.ThicknessDetectionUploaderService"/>
+    </application>
+</manifest>

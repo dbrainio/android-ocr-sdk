@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.dbrain.facerecognizer.FaceRecognizer
 import com.dbrain.textrecognizer.TextRecognizer
+import com.dbrain.thickness.ThicknessDetector
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,5 +29,9 @@ class MainActivity : AppCompatActivity() {
             FaceRecognizer.CAMERA_FACING_FRONT,
             true
         ).buildAndStart(this)
+    }
+
+    fun launchThickness(v: View) {
+        ThicknessDetector.Builder().buildAndStart(this)
     }
 }

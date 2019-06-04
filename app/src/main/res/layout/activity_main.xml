@@ -16,4 +16,8 @@
             android:text="Face"
             android:onClick="launchFace"/>
 
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Thickness"
+            android:onClick="launchThickness"/>
+
 </LinearLayout>

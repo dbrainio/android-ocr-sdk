@@ -1,1 +1,1 @@
-include ':app', ':core', ':textrecognizer', ':facerecognizer'
+include ':app', ':core', ':textrecognizer', ':facerecognizer', ':thickness'
