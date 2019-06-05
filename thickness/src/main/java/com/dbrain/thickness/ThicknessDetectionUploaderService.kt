@@ -87,7 +87,7 @@ class ThicknessDetectionUploaderService : IntentService("ThicknessDetectionUploa
                     state = stream.next()
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             LocalBroadcastManager.getInstance(this@ThicknessDetectionUploaderService).sendBroadcast(
                 Intent(BROADCAST).apply {
                     putExtra(
