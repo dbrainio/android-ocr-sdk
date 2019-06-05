@@ -42,6 +42,8 @@ class ThicknessDetectionCaptureActivity : AppCompatActivity(),
     private var uploading: Boolean = false
     private var inResultsScreen: Boolean = false
 
+    private var bmpResponse: Bitmap? = null
+
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent == null) return
@@ -50,6 +52,7 @@ class ThicknessDetectionCaptureActivity : AppCompatActivity(),
                 ThicknessDetectionUploaderService.BROADCAST_STATUS_COMPLETED -> {
                     val resultBytes = intent.getByteArrayExtra(ThicknessDetectionUploaderService.BROADCAST_RESULT_IMAGE)
                     val bmp = if (resultBytes != null) BitmapFactory.decodeByteArray(resultBytes, 0, resultBytes.size) else null
+                    bmpResponse = bmp
                     if (bmp != null) {
                         uploadingCompleted()
                         showResults(bmp)
@@ -226,6 +229,11 @@ class ThicknessDetectionCaptureActivity : AppCompatActivity(),
     private fun hideResults() {
         resultsContainer.visibility = View.INVISIBLE
         resultImage.setImageBitmap(null)
+        val bmp = bmpResponse
+        if (bmp != null && !bmp.isRecycled) {
+            bmp.recycle()
+        }
+        bmpResponse = null
         inResultsScreen = false
         startCamera()
     }
