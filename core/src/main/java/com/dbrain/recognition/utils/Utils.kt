@@ -9,3 +9,6 @@ fun dp(dp: Float, context: Context): Float {
 }
 
 fun getAppTypeface(context: Context) = Typeface.createFromAsset(context.assets, "fonts/TTNorms-Medium.otf")
+
+
+fun normalizeType(type: String) = type.replace("_", " ").split(" ").joinToString(" ") { it.capitalize() }

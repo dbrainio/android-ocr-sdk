@@ -7,7 +7,10 @@
 
     <application
             android:usesCleartextTraffic="true">
-        <service android:name=".services.UploaderService"/>
+        <activity android:name=".activities.ClassifiedActivity"/>
+        <activity android:name=".activities.RecognizedActivity"/>
+        <service android:name=".services.ClassifiedUploaderService"/>
+        <service android:name=".services.RecognizedUploadService"/>
     </application>
 
 </manifest>

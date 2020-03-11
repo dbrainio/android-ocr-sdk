@@ -18,7 +18,7 @@ import com.dbrain.recognition.utils.getAppTypeface
 
 class PhotoPreview(
     context: Context,
-    val byteArray: ByteArray,
+    val fileName: String,
     val listener: Listener?,
     val facing: Int,
     attrs: AttributeSet? = null,
@@ -27,7 +27,7 @@ class PhotoPreview(
     FrameLayout(context, attrs, defStyleAttr) {
     interface Listener {
         fun onPhotoPreviewBackPressed()
-        fun onPhotoPreviewSendPressed(byteArray: ByteArray)
+        fun onPhotoPreviewSendPressed(fileName: String)
     }
 
     private val imageView = ImageView(context).apply {
@@ -36,7 +36,7 @@ class PhotoPreview(
     private val sendButton = RoundedButton(context).apply {
         text = context.getString(R.string.send)
         setOnClickListener {
-            listener?.onPhotoPreviewSendPressed(byteArray)
+            listener?.onPhotoPreviewSendPressed(fileName)
             showSending()
         }
     }
@@ -62,7 +62,7 @@ class PhotoPreview(
     init {
         isClickable = true
         addView(imageView)
-        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        val bitmap = BitmapFactory.decodeFile(fileName)
         val flip = facing == android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT
         val m = Matrix()
         m.invert(m)

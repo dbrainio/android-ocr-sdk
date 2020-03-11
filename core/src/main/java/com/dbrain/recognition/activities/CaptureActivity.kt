@@ -20,14 +20,16 @@ import android.widget.FrameLayout
 import com.dbrain.recognition.R
 import com.dbrain.recognition.camera.Camera
 import com.dbrain.recognition.camera.CropParameters
+import com.dbrain.recognition.data.ClassifiedItem
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Drawer
 import com.dbrain.recognition.processors.Processor
-import com.dbrain.recognition.services.UploaderService
+import com.dbrain.recognition.services.ClassifiedUploaderService
 import com.dbrain.recognition.views.AutoFitTextureView
 import com.dbrain.recognition.views.OverlayView
 import com.dbrain.recognition.views.PhotoPreview
 import com.dbrain.recognition.views.ResultScreen
+import java.io.File
 
 abstract class CaptureActivity : AppCompatActivity(),
     TextureView.SurfaceTextureListener,
@@ -51,9 +53,12 @@ abstract class CaptureActivity : AppCompatActivity(),
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent == null) return
-            when (intent.getStringExtra(UploaderService.BROADCAST_STATUS)) {
-                UploaderService.BROADCAST_STATUS_ERROR -> uploadingError()
-                UploaderService.BROADCAST_STATUS_COMPLETED -> uploadingCompleted()
+            when (intent.getStringExtra(ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS)) {
+                ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS_ERROR -> uploadingError()
+                ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS_COMPLETED -> uploadingCompleted(
+                    intent.getParcelableArrayListExtra<ClassifiedItem>(ClassifiedUploaderService.CLASSIFIED_BROADCAST_RESULT_ITEMS),
+                    intent.getStringExtra(ClassifiedUploaderService.CLASSIFIED_BROADCAST_RESULT_FILE_NAME)
+                )
             }
         }
     }
@@ -93,7 +98,7 @@ abstract class CaptureActivity : AppCompatActivity(),
         }
 
         LocalBroadcastManager.getInstance(this)
-            .registerReceiver(broadcastReceiver, IntentFilter(UploaderService.BROADCAST))
+            .registerReceiver(broadcastReceiver, IntentFilter(ClassifiedUploaderService.CLASSIFIED_BROADCAST))
     }
 
     protected fun stopCamera() {
@@ -124,7 +129,7 @@ abstract class CaptureActivity : AppCompatActivity(),
     override fun onDestroy() {
         super.onDestroy()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
-        stopService(Intent(this, UploaderService::class.java))
+        stopService(Intent(this, ClassifiedUploaderService::class.java))
         processor?.releaseProcessor()
     }
 
@@ -183,12 +188,13 @@ abstract class CaptureActivity : AppCompatActivity(),
 
     override fun onImageCaptured(byteArray: ByteArray?) {
         if (byteArray == null) return
-
+        val fileName = File(cacheDir, "image.jpg")
+        fileName.writeBytes(byteArray)
 
         if (preview != null) rootLayout?.removeView(preview)
         preview = PhotoPreview(
             this,
-            byteArray = byteArray,
+            fileName = fileName.toString(),
             facing = getCameraFacing(),
             listener = this
         )
@@ -206,7 +212,7 @@ abstract class CaptureActivity : AppCompatActivity(),
         if (preview != null) rootLayout?.removeView(preview)
         preview = null
         startCamera()
-        stopService(Intent(this, UploaderService::class.java))
+        stopService(Intent(this, ClassifiedUploaderService::class.java))
     }
 
     override fun onBackPressed() {
@@ -217,10 +223,10 @@ abstract class CaptureActivity : AppCompatActivity(),
         }
     }
 
-    override fun onPhotoPreviewSendPressed(byteArray: ByteArray) {
-        startService(Intent(this, UploaderService::class.java).run {
-            action = UploaderService.ACTION_UPLOAD_IMAGE
-            putExtra(UploaderService.ARG_IMAGE, byteArray)
+    override fun onPhotoPreviewSendPressed(fileName: String) {
+        startService(Intent(this, ClassifiedUploaderService::class.java).run {
+            action = ClassifiedUploaderService.ACTION_UPLOAD_IMAGE
+            putExtra(ClassifiedUploaderService.ARG_FILE_NAME, fileName)
             this
         })
     }
@@ -242,9 +248,10 @@ abstract class CaptureActivity : AppCompatActivity(),
         showResultScreen(ResultScreen.RESULT_ERROR)
     }
 
-    private fun uploadingCompleted() {
+    private fun uploadingCompleted(classifiedItems: ArrayList<ClassifiedItem>, fileName: String) {
         onPhotoPreviewBackPressed()
-        showResultScreen(ResultScreen.RESULT_OK)
+        ClassifiedActivity.go(this, classifiedItems, fileName)
+        // showResultScreen(ResultScreen.RESULT_OK)
     }
 
     override fun onResultScreenButtonClicked(result: Int) {

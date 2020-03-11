@@ -7,5 +7,7 @@
     <string name="retake">Retake</string>
     <string name="sending_failed">Sending failed</string>
     <string name="all_done">All done</string>
-    <string name="sending">Sending...</string>
+    <string name="sending">Sending…</string>
+    <string name="recognize">Recognize</string>
+    <string name="go_back">Go back</string>
 </resources>
