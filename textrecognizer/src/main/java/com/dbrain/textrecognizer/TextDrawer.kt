@@ -3,7 +3,7 @@ package com.dbrain.textrecognizer
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Drawer
 import com.dbrain.recognition.utils.dp

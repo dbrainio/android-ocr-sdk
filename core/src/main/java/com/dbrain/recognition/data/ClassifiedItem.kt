@@ -2,6 +2,7 @@ package com.dbrain.recognition.data
 
 import android.os.Parcelable
 import com.dbrain.recognition.api.Key
+import com.dbrain.recognition.utils.isNullOrEmpty
 import com.dbrain.recognition.utils.normalizeType
 import kotlinx.android.parcel.Parcelize
 import org.json.JSONArray
@@ -16,9 +17,12 @@ data class ClassifiedItem(
 
     companion object {
 
-        fun list(array: JSONArray): ArrayList<ClassifiedItem> {
+        fun list(array: JSONArray?): ArrayList<ClassifiedItem> {
             val list = ArrayList<ClassifiedItem>()
-            for (i in 0 until array.length()) {
+            if (array.isNullOrEmpty()) {
+                return list
+            }
+            for (i in 0 until array!!.length()) {
                 list.add(ClassifiedItem(array.getJSONObject(i)))
             }
             return list

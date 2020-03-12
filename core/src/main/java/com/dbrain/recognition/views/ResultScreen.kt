@@ -1,14 +1,12 @@
 package com.dbrain.recognition.views
 
 import android.content.Context
-import android.graphics.Typeface
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.dbrain.recognition.R
 import com.dbrain.recognition.utils.dp
 import com.dbrain.recognition.utils.getAppTypeface

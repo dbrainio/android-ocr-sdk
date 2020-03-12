@@ -7,10 +7,7 @@
 
     <application
             android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ClassifiedActivity"/>
-        <activity android:name=".activities.RecognizedActivity"/>
-        <service android:name=".services.ClassifiedUploaderService"/>
-        <service android:name=".services.RecognizedUploadService"/>
+        <activity android:name="dbrain.io.ClassifiedActivity"/>
     </application>
 
 </manifest>

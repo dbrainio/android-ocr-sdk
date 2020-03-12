@@ -1,9 +1,12 @@
 package dbrain.io
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.dbrain.facerecognizer.FaceRecognizer
+import com.dbrain.recognition.activities.CaptureActivity
 import com.dbrain.textrecognizer.TextRecognizer
 
 class MainActivity : AppCompatActivity() {
@@ -11,7 +14,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
     }
 
     fun launchText(v: View) {
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             16f,
             10f,
             0.8f
-        ).buildAndStart(this)
+        ).buildAndStartForResult(this, TEXT_RECOGNIZER_RESULT)
     }
 
     fun launchFace(v: View) {
@@ -28,5 +30,19 @@ class MainActivity : AppCompatActivity() {
             FaceRecognizer.CAMERA_FACING_FRONT,
             true
         ).buildAndStart(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == TEXT_RECOGNIZER_RESULT && data != null) {
+            val isSuccessfully = data.getBooleanExtra(CaptureActivity.ARG_SUCCESSFULLY, false)
+            if (isSuccessfully) {
+                ClassifiedActivity.go(this, data.getParcelableArrayListExtra(CaptureActivity.ARG_CLASSIFIED_LIST), data.getStringExtra(CaptureActivity.ARG_FILE))
+            }
+        }
+    }
+
+    companion object {
+        private const val TEXT_RECOGNIZER_RESULT = 1
     }
 }

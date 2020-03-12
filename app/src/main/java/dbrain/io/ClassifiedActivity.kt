@@ -1,20 +1,19 @@
-package com.dbrain.recognition.activities
+package dbrain.io
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import com.dbrain.recognition.R
 import com.dbrain.recognition.data.ClassifiedItem
 
-class ClassifiedActivity : AppCompatActivity() {
+class ClassifiedActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.actcivity_classified)
+        setContentView(R.layout.activity_classified)
         val items = intent.getParcelableArrayListExtra<ClassifiedItem>(ITEMS)
         val spinner = findViewById<Spinner>(R.id.spinner)
         val adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, ClassifiedItem.titles(items))

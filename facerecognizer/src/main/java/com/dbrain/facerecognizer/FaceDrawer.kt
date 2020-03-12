@@ -5,8 +5,8 @@ import android.graphics.Canvas
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.RectF
-import android.support.v4.content.ContextCompat
 import android.util.SparseArray
+import androidx.core.content.ContextCompat
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Drawer
 import com.dbrain.recognition.utils.dp

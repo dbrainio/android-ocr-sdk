@@ -2,42 +2,39 @@ package com.dbrain.recognition.activities
 
 import android.Manifest
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.SurfaceTexture
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
 import android.view.TextureView
 import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import com.dbrain.recognition.R
+import com.dbrain.recognition.api.ClassifyRequest
+import com.dbrain.recognition.api.internal.Request
 import com.dbrain.recognition.camera.Camera
 import com.dbrain.recognition.camera.CropParameters
 import com.dbrain.recognition.data.ClassifiedItem
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Drawer
 import com.dbrain.recognition.processors.Processor
-import com.dbrain.recognition.services.ClassifiedUploaderService
 import com.dbrain.recognition.views.AutoFitTextureView
 import com.dbrain.recognition.views.OverlayView
 import com.dbrain.recognition.views.PhotoPreview
 import com.dbrain.recognition.views.ResultScreen
 import java.io.File
+import java.lang.Exception
 
-abstract class CaptureActivity : AppCompatActivity(),
+abstract class CaptureActivity : Activity(),
     TextureView.SurfaceTextureListener,
     Camera.CameraListener,
     Processor.Listener,
     View.OnClickListener,
     PhotoPreview.Listener,
-    ResultScreen.Listener {
+    ResultScreen.Listener,
+    Request.Callback<ArrayList<ClassifiedItem>> {
 
     private var textureView: AutoFitTextureView? = null
     private var overlayView: OverlayView? = null
@@ -49,19 +46,7 @@ abstract class CaptureActivity : AppCompatActivity(),
     private var camera: Camera? = null
     private var drawer: Drawer? = null
     private var processor: Processor? = null
-
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent == null) return
-            when (intent.getStringExtra(ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS)) {
-                ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS_ERROR -> uploadingError()
-                ClassifiedUploaderService.CLASSIFIED_BROADCAST_STATUS_COMPLETED -> uploadingCompleted(
-                    intent.getParcelableArrayListExtra<ClassifiedItem>(ClassifiedUploaderService.CLASSIFIED_BROADCAST_RESULT_ITEMS),
-                    intent.getStringExtra(ClassifiedUploaderService.CLASSIFIED_BROADCAST_RESULT_FILE_NAME)
-                )
-            }
-        }
-    }
+    private var classifyRequest: ClassifyRequest? = null
 
     abstract fun getDrawer(): Drawer?
     abstract fun getProcessor(parameters: Bundle?): Processor?
@@ -96,28 +81,22 @@ abstract class CaptureActivity : AppCompatActivity(),
         textureView?.apply {
             surfaceTextureListener = this@CaptureActivity
         }
-
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(broadcastReceiver, IntentFilter(ClassifiedUploaderService.CLASSIFIED_BROADCAST))
     }
 
-    protected fun stopCamera() {
+    private fun stopCamera() {
         camera?.stopPreview()
     }
 
-    protected fun startCamera() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissions(
-                    arrayOf(Manifest.permission.CAMERA),
-                    PERMISSION_REQUEST_CAMERA
-                )
-                return
-            }
+    private fun startCamera() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(Manifest.permission.CAMERA),
+                PERMISSION_REQUEST_CAMERA
+            )
+            return
         }
 
         camera?.startPreview(
@@ -128,8 +107,7 @@ abstract class CaptureActivity : AppCompatActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
-        stopService(Intent(this, ClassifiedUploaderService::class.java))
+        classifyRequest?.cancel()
         processor?.releaseProcessor()
     }
 
@@ -212,7 +190,7 @@ abstract class CaptureActivity : AppCompatActivity(),
         if (preview != null) rootLayout?.removeView(preview)
         preview = null
         startCamera()
-        stopService(Intent(this, ClassifiedUploaderService::class.java))
+        classifyRequest?.cancel()
     }
 
     override fun onBackPressed() {
@@ -224,11 +202,9 @@ abstract class CaptureActivity : AppCompatActivity(),
     }
 
     override fun onPhotoPreviewSendPressed(fileName: String) {
-        startService(Intent(this, ClassifiedUploaderService::class.java).run {
-            action = ClassifiedUploaderService.ACTION_UPLOAD_IMAGE
-            putExtra(ClassifiedUploaderService.ARG_FILE_NAME, fileName)
-            this
-        })
+        classifyRequest?.cancel()
+        classifyRequest = ClassifyRequest(File(fileName))
+        classifyRequest?.responseUI(this)
     }
 
     private fun showResultScreen(result: Int) {
@@ -243,22 +219,28 @@ abstract class CaptureActivity : AppCompatActivity(),
         startCamera()
     }
 
-    private fun uploadingError() {
+    override fun onResponse(response: ArrayList<ClassifiedItem>) {
         onPhotoPreviewBackPressed()
-        showResultScreen(ResultScreen.RESULT_ERROR)
+        setResult(RESULT_OK, Intent().apply {
+            putExtra(ARG_SUCCESSFULLY, true)
+            putExtra(ARG_FILE, classifyRequest!!.getFile()!!.toString())
+            putParcelableArrayListExtra(ARG_CLASSIFIED_LIST, response)
+        })
+        finish()
     }
 
-    private fun uploadingCompleted(classifiedItems: ArrayList<ClassifiedItem>, fileName: String) {
-        onPhotoPreviewBackPressed()
-        ClassifiedActivity.go(this, classifiedItems, fileName)
-        // showResultScreen(ResultScreen.RESULT_OK)
+    override fun onError(exception: Exception) {
+        setResult(RESULT_OK, Intent().apply {
+            putExtra(ARG_SUCCESSFULLY, false)
+        })
+        finish()
     }
 
     override fun onResultScreenButtonClicked(result: Int) {
         when (result) {
             ResultScreen.RESULT_ERROR -> removeResultScreen()
             ResultScreen.RESULT_OK -> {
-                setResult(Activity.RESULT_OK)
+                setResult(RESULT_OK)
                 finish()
             }
         }
@@ -271,5 +253,8 @@ abstract class CaptureActivity : AppCompatActivity(),
         const val ARG_CROP_REGION_X = "CROP_REGION_X"
         const val ARG_CROP_REGION_Y = "CROP_REGION_Y"
         const val ARG_CROP_SCALE = "CROP_SCALE"
+        const val ARG_FILE = "FILE"
+        const val ARG_CLASSIFIED_LIST = "CLASSIFIED_LIST"
+        const val ARG_SUCCESSFULLY = "SUCCESSFULLY"
     }
 }

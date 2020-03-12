@@ -10,4 +10,6 @@ object Key {
     const val TEXT = "text"
     const val CONFIDENCE = "confidence"
     const val FIELDS = "fields"
+    const val AUTHORIZATION = "Authorization"
+    const val HTTPS = "https"
 }
