@@ -3,15 +3,10 @@ package com.dbrain.textrecognizer
 import android.content.Context
 import android.graphics.*
 import android.os.Bundle
-import android.util.Log
 import com.dbrain.recognition.DBrainBuilder
 import com.dbrain.recognition.activities.CaptureActivity
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Processor
-import com.google.android.gms.vision.Detector
-import com.google.android.gms.vision.Frame
-import com.google.android.gms.vision.text.TextBlock
-import com.google.android.gms.vision.text.TextRecognizer
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
@@ -20,8 +15,7 @@ class TextProcessor(
     context: Context,
     parameters: Bundle?,
     listener: Listener
-) : Processor(context, listener),
-    Detector.Processor<TextBlock> {
+) : Processor(context, listener) {
 
     companion object {
 
@@ -35,11 +29,8 @@ class TextProcessor(
         private const val BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND = (0.05 * MOST_FREQUENT_LUMINOCITY_BASE_VALUE).toInt()
     }
 
-
-    private var textRecognizer: TextRecognizer? = null
     private val MIN_ALLOWED_TEXT_LENGTH = 20
     private var detected = true
-    private val frameBuilder = Frame.Builder()
     private val rotation =
         if (parameters?.getInt(CaptureActivity.ARG_CROP_SCALE) == DBrainBuilder.CAMERA_FACING_BACK) 1 else 3
     private val dataBundle = DataBundle()
@@ -48,8 +39,7 @@ class TextProcessor(
 
     private val actualFrameHistogram = IntArray(256)
 
-
-    override fun receiveDetections(detections: Detector.Detections<TextBlock>) {
+    /* override fun receiveDetections(detections: Detector.Detections<TextBlock>) {
         val items = detections.detectedItems
         var textLength = 0
         for (i in 0 until items.size()) {
@@ -59,24 +49,15 @@ class TextProcessor(
         }
 
         val detected = textLength >= MIN_ALLOWED_TEXT_LENGTH
-
-        if (BuildConfig.DEBUG) {
-            sendHistogram(detected)
-        }
-
         if (this.detected != detected) {
             this.detected = detected
             dataBundle.detected = detected
             postEvent(dataBundle)
         }
-    }
-
-    override fun release() {
-
-    }
+    } */
 
     override fun close() {
-        textRecognizer?.release()
+
     }
 
     override fun processFrame(
@@ -86,16 +67,8 @@ class TextProcessor(
         cameraPreviewHeight: Int,
         frameIndex: Int
     ) {
-        if (textRecognizer == null) textRecognizer = TextRecognizer.Builder(context).build().apply {
-            setProcessor(this@TextProcessor)
-        }
 
-        val frame = frameBuilder
-            .setId(frameIndex)
-            .setTimestampMillis(System.currentTimeMillis())
-            .setRotation(rotation)
-
-        if (croppedBitmap != null)
+        /* if (croppedBitmap != null)
             frame.setBitmap(croppedBitmap)
         else
             frame.setImageData(
@@ -103,27 +76,14 @@ class TextProcessor(
                 cameraPreviewWidth,
                 cameraPreviewHeight,
                 ImageFormat.NV21
-            )
+            ) */
 
-        val builtFrame = frame.build()
-
-
-        getFrameHistogram(builtFrame, actualFrameHistogram)
-        if (!containsBrightAreas(actualFrameHistogram, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)) {
-            textRecognizer?.receiveFrame(builtFrame)
-        } else {
-            dataBundle.detected = false
-            postEvent(dataBundle)
-
-            if (BuildConfig.DEBUG) {
-                sendHistogram(false)
-            }
-        }
-
+        // getFrameHistogram(builtFrame, actualFrameHistogram)
+        dataBundle.detected = !containsBrightAreas(actualFrameHistogram, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)
+        postEvent(dataBundle)
     }
 
     private fun sendHistogram(detectedText: Boolean) {
-
         val histogramCopy = IntArray(actualFrameHistogram.size) { actualFrameHistogram[it] }
         val data = HistogramDataBundle(detectedText, histogramCopy, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)
         postEvent(data)
@@ -133,7 +93,7 @@ class TextProcessor(
     private val yValuesCount = IntArray(256)                            //Индекс = яркость от 0 до 255, значение — сколько пикселей с такой яркостью встречается на кропе
     private var mostFrequentYValue = 0
 
-    private fun getFrameHistogram(frame: Frame, output: IntArray) {
+    /* private fun getFrameHistogram(frame: Frame, output: IntArray) {
         val yValuesBuf = frame.grayscaleImageData
         for (i in 0 until 256) {
             yValuesCount[i] = 0
@@ -171,7 +131,7 @@ class TextProcessor(
             val proportion = ((MOST_FREQUENT_LUMINOCITY_BASE_VALUE * frequencyOfCurrentLuminocity.toLong()) / mostFrequentCount).toInt()
             output[i] = proportion
         }
-    }
+    } */
 
     private fun containsBrightAreas(histogram: IntArray, luminocityValueLowerBound: Int, relativeValueUpperBound: Int) : Boolean {
         //В ней 100000 — это значение самой часто встречающейся яркости, все остальные — это "как часто встречается относительно самой частой".
@@ -181,9 +141,6 @@ class TextProcessor(
             val brightSpotRelativeFrequency = histogram[i]
             if (brightSpotRelativeFrequency > relativeValueUpperBound) {
                 //Доля пикселей с высоким яркостным значением слишком большая, считаем, что засветы таки есть
-                if (BuildConfig.DEBUG) {
-                    Log.d("TextProcessor", "Detected bright spots: luminocity = $i, value = $brightSpotRelativeFrequency")
-                }
                 return true
             }
         }
