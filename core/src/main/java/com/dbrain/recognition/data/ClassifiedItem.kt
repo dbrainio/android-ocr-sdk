@@ -28,8 +28,13 @@ data class ClassifiedItem(
             return list
         }
 
-        fun titles(array: List<ClassifiedItem>): Array<String> {
+        fun titles(array: List<ClassifiedItem>?): Array<String> {
             val titles = ArrayList<String>()
+            if (array.isNullOrEmpty()) {
+                titles.add("Text 1")
+                titles.add("text 2")
+                return titles.toTypedArray()
+            }
             for (i in array.indices) {
                 titles.add(normalizeType(array[i].document.type))
             }
