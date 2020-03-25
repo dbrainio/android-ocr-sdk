@@ -2,7 +2,6 @@ package dbrain.io
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.dbrain.facerecognizer.FaceRecognizer
@@ -19,9 +18,9 @@ class MainActivity : AppCompatActivity() {
     fun launchText(v: View) {
         TextRecognizer.Builder(
             TextRecognizer.CAMERA_FACING_BACK,
-            16f,
-            10f,
-            0.8f
+            3.5f,
+            4.9f,
+            0.5f
         ).buildAndStartForResult(this, TEXT_RECOGNIZER_RESULT)
     }
 

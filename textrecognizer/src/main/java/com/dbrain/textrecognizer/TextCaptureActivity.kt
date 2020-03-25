@@ -16,7 +16,7 @@ class TextCaptureActivity : CaptureActivity() {
     private var cropParameters: CropParameters? = null
 
     override fun getDrawer() = TextDrawer(this)
-    override fun getProcessor(parameters: Bundle?) = TextProcessor(this, parameters, this)
+    override fun getProcessor(parameters: Bundle?) = TextProcessor(this, this)
     override fun getCameraFacing() = cameraFacing
     override fun getCropRegionParameters() = cropParameters
 

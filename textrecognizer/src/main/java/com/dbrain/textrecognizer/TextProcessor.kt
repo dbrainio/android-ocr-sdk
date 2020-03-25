@@ -2,9 +2,6 @@ package com.dbrain.textrecognizer
 
 import android.content.Context
 import android.graphics.*
-import android.os.Bundle
-import com.dbrain.recognition.DBrainBuilder
-import com.dbrain.recognition.activities.CaptureActivity
 import com.dbrain.recognition.processors.DataBundle
 import com.dbrain.recognition.processors.Processor
 import java.nio.ByteBuffer
@@ -13,7 +10,6 @@ import kotlin.math.min
 
 class TextProcessor(
     context: Context,
-    parameters: Bundle?,
     listener: Listener
 ) : Processor(context, listener) {
 
@@ -29,32 +25,10 @@ class TextProcessor(
         private const val BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND = (0.05 * MOST_FREQUENT_LUMINOCITY_BASE_VALUE).toInt()
     }
 
-    private val MIN_ALLOWED_TEXT_LENGTH = 20
-    private var detected = true
-    private val rotation =
-        if (parameters?.getInt(CaptureActivity.ARG_CROP_SCALE) == DBrainBuilder.CAMERA_FACING_BACK) 1 else 3
     private val dataBundle = DataBundle()
 
     //Для проверки на засветы
-
     private val actualFrameHistogram = IntArray(256)
-
-    /* override fun receiveDetections(detections: Detector.Detections<TextBlock>) {
-        val items = detections.detectedItems
-        var textLength = 0
-        for (i in 0 until items.size()) {
-            val item = items.valueAt(i)
-            textLength += item.value.length
-            if (textLength >= MIN_ALLOWED_TEXT_LENGTH) break
-        }
-
-        val detected = textLength >= MIN_ALLOWED_TEXT_LENGTH
-        if (this.detected != detected) {
-            this.detected = detected
-            dataBundle.detected = detected
-            postEvent(dataBundle)
-        }
-    } */
 
     override fun close() {
 
@@ -68,33 +42,35 @@ class TextProcessor(
         frameIndex: Int
     ) {
 
-        /* if (croppedBitmap != null)
-            frame.setBitmap(croppedBitmap)
-        else
-            frame.setImageData(
-                ByteBuffer.wrap(originalByteArray, 0, originalByteArray!!.size),
-                cameraPreviewWidth,
-                cameraPreviewHeight,
-                ImageFormat.NV21
-            ) */
+        val frame = Frame()
+        if (croppedBitmap != null) {
+            frame.bitmap = croppedBitmap
+        } else {
+            frame.byteBuffer = ByteBuffer.wrap(originalByteArray, 0, originalByteArray!!.size)
+            frame.width = cameraPreviewWidth
+            frame.height = cameraPreviewHeight
+        }
 
-        // getFrameHistogram(builtFrame, actualFrameHistogram)
+        getFrameHistogram(frame, actualFrameHistogram)
+
         dataBundle.detected = !containsBrightAreas(actualFrameHistogram, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)
         postEvent(dataBundle)
+        if (BuildConfig.DEBUG) {
+            sendHistogram()
+        }
     }
 
-    private fun sendHistogram(detectedText: Boolean) {
+    private fun sendHistogram() {
         val histogramCopy = IntArray(actualFrameHistogram.size) { actualFrameHistogram[it] }
-        val data = HistogramDataBundle(detectedText, histogramCopy, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)
+        val data = HistogramDataBundle(histogramCopy, BRIGHT_SPOT_LUMINOCITY_LOWER_BOUND, BRIGHT_VALUES_RELATIVE_VALUE_UPPER_BOUND)
         postEvent(data)
     }
-
 
     private val yValuesCount = IntArray(256)                            //Индекс = яркость от 0 до 255, значение — сколько пикселей с такой яркостью встречается на кропе
     private var mostFrequentYValue = 0
 
-    /* private fun getFrameHistogram(frame: Frame, output: IntArray) {
-        val yValuesBuf = frame.grayscaleImageData
+    private fun getFrameHistogram(frame: Frame, output: IntArray) {
+        val yValuesBuf = frame.grayscale()
         for (i in 0 until 256) {
             yValuesCount[i] = 0
             output[i] = 0
@@ -103,11 +79,10 @@ class TextProcessor(
         yValuesBuf.rewind()
         val asArray = ByteArray(yValuesBuf.remaining())
         yValuesBuf.get(asArray)
-        val metadata = frame.metadata
         //В NV21 (да и по доке) первые width * height байт — яркостные составляющие каждого пикселя и только потом могут идти цветоразностные.
         //Нам цветоразностные не нужны, но есть нюанс: байт в джаве знаковый, поэтому нам нужно ещё будет перевести его, чтобы не было отрицательных яркостных значений.
 
-        val picArea = metadata.width * metadata.height
+        val picArea = frame.width * frame.height
         for (i in 0 until picArea) {
             val luminosityOfCurrentPixel = asArray[i].toInt().and(0xFF)         //перевод из signed byte в signed int, чтобы уж точно все поместилось
 
@@ -131,7 +106,7 @@ class TextProcessor(
             val proportion = ((MOST_FREQUENT_LUMINOCITY_BASE_VALUE * frequencyOfCurrentLuminocity.toLong()) / mostFrequentCount).toInt()
             output[i] = proportion
         }
-    } */
+    }
 
     private fun containsBrightAreas(histogram: IntArray, luminocityValueLowerBound: Int, relativeValueUpperBound: Int) : Boolean {
         //В ней 100000 — это значение самой часто встречающейся яркости, все остальные — это "как часто встречается относительно самой частой".
@@ -146,5 +121,35 @@ class TextProcessor(
         }
 
         return false
+    }
+
+    private class Frame {
+
+        var bitmap: Bitmap? = null
+        var byteBuffer: ByteBuffer? = null
+        var width: Int = 0
+        get() {
+            return bitmap?.width ?: field
+        }
+
+        var height: Int = 0
+        get() {
+            return bitmap?.height ?: field
+        }
+
+        fun grayscale(): ByteBuffer {
+            if (byteBuffer != null) {
+                return byteBuffer!!
+            }
+            val pixels = IntArray(width * height)
+            bitmap!!.getPixels(pixels, 0, width, 0, 0, width, height)
+            val grayscalePixels = ByteArray(width * height)
+            var pixedIndex = 0
+            while(pixedIndex < pixels.size) {
+                grayscalePixels[pixedIndex] = (Color.red(pixels[pixedIndex]).toFloat() * 0.299F + Color.green(pixels[pixedIndex]).toFloat() * 0.587F + Color.blue(pixels[pixedIndex]).toFloat() * 0.114F).toByte()
+                pixedIndex++
+            }
+            return ByteBuffer.wrap(grayscalePixels)
+        }
     }
 }
