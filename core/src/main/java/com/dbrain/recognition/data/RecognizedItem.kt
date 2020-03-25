@@ -14,11 +14,13 @@ data class RecognizedItem(val docType: String, val fields: List<RecognizedField>
 
     companion object {
 
+        private const val MRZ = "mrz"
+
         fun parseFields(json: JSONObject) : List<RecognizedField> {
             val fields = arrayListOf<RecognizedField>()
             json.keys().forEach {
                 val field = RecognizedField(it, json.getJSONObject(it))
-                if (!field.text.isBlank()) {
+                if (!field.text.isBlank() && !field.fieldName.toLowerCase().startsWith(MRZ)) {
                     fields.add(field)
                 }
             }
