@@ -71,6 +71,8 @@ class RecognizedCell(context: Context): LinearLayout(context) {
             accuracyView.textSize = 12f
             accuracyView.setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
+            setSingleLine(true)
+            maxLines = 1
         }
     }
 }

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">DBrain</string>
+    <string name="field">Field</string>
+    <string name="confidence">Confidence</string>
+    <string name="value">Value</string>
+    <string name="back_to_main">Back to main</string>
 </resources>
