@@ -31,7 +31,7 @@ class TextProcessor(
     private val actualFrameHistogram = IntArray(256)
 
     override fun close() {
-
+       
     }
 
     override fun processFrame(

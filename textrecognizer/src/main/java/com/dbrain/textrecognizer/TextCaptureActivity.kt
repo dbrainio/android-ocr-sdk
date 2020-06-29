@@ -38,10 +38,10 @@ class TextCaptureActivity : CaptureActivity() {
         super.onCreate(savedInstanceState)
 
         //only for debug purposes
-        if (BuildConfig.DEBUG) {
-            val root: ViewGroup = findViewById(android.R.id.content)
-            root.addView(histogramView)
-        }
+        // if (BuildConfig.DEBUG) {
+        //    val root: ViewGroup = findViewById(android.R.id.content)
+        //    root.addView(histogramView)
+        // }
     }
 
     override fun onProcessorEvent(dataBundle: DataBundle) {
