@@ -1,6 +1,7 @@
 package com.dbrain.recognition.data
 
 import android.os.Parcelable
+import android.util.Log
 import com.dbrain.recognition.api.Key
 import com.dbrain.recognition.utils.isNullOrEmpty
 import kotlinx.android.parcel.Parcelize
@@ -14,6 +15,27 @@ data class RecognizedItem(val docType: String, val fields: List<RecognizedField>
 
     companion object {
 
+        private val order = arrayListOf(
+            "surname",
+            "first_name",
+            "other_names",
+            "date_of_birth",
+            "series_and_number",
+            "subdivision_code",
+            "date_of_issue",
+            "issuing_authority",
+            "place_of_birth"
+        )
+
+        private val comparator = Comparator<RecognizedField> { field1: RecognizedField, field2: RecognizedField ->
+            val index1 = order.indexOf(field1.fieldName)
+            val index2 = order.indexOf(field2.fieldName)
+            if (index1 == -1 || index2 == -1) {
+                return@Comparator 0
+            }
+            return@Comparator index1 - index2
+        }
+
         private const val MRZ = "mrz"
 
         fun parseFields(json: JSONObject) : List<RecognizedField> {
@@ -24,6 +46,7 @@ data class RecognizedItem(val docType: String, val fields: List<RecognizedField>
                     fields.add(field)
                 }
             }
+            fields.sortWith(comparator)
             return fields
         }
 
