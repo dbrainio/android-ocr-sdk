@@ -1,0 +1,4 @@
+<resources>
+    <string name="no_camera_permission">Please allow camera access</string>
+    <string name="please_wait">Please wait</string>
+</resources>
