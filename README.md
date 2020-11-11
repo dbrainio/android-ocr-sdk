@@ -6,7 +6,7 @@
 ### Gradle:
 
 Step 1. Add the JitPack repository to your build file Add it in your root build.gradle at the end of repositories:
-```kotlin
+```gradle
 allprojects {
   repositories {
     ...
@@ -16,7 +16,7 @@ allprojects {
 ```
 
 Step 2. Add the dependency
-```kotlin
+```gradle
 dependencies {
   implementation 'com.github.dbrainio:android-ocr-sdk:v3'
 }
