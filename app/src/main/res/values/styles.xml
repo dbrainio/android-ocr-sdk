@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.DBrain" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorSecondary">@color/secondary_color</item>
+    </style>
+
+    <style name="Theme.DBrain.Activity" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">#E5E5E5</item>
+    </style>
+
+    <style name="Theme.DBrain.Activity.Light.ActionBar" parent="Theme.AppCompat.Light">
+        <item name="android:windowBackground">#fff</item>
+        <item name="android:actionBarStyle">@style/Theme.DBrain.ActionBar</item>
+        <item name="android:homeAsUpIndicator">@drawable/ic_baseline_arrow_back_24</item>
+    </style>
+
+    <style name="Theme.DBrain.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">#fff</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
+    <style name="Theme.DBrain.Text.Primary" parent="Widget.AppCompat.TextView">
+        <item name="android:fontFamily">@font/ttnormsregular</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="Theme.DBrain.Text.Secondary" parent="Theme.DBrain.Text.Primary">
+        <item name="android:fontFamily">@font/ttnormsregular</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
+    <style name="Theme.DBrain.Text.Header" parent="Theme.DBrain.Text.Primary">
+        <item name="android:fontFamily">@font/ttnormsmedium</item>
+    </style>
+
+    <style name="Theme.DBrain.Button" parent="Widget.AppCompat.TextView">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:background">@drawable/button_blue_bg</item>
+        <item name="android:paddingStart">36dp</item>
+        <item name="android:paddingEnd">36dp</item>
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:fontFamily">@font/ttnormsmedium</item>
+        <item name="android:textColor">#fff</item>
+    </style>
+
+    <style name="Theme.DBrain.Button.Small.Black" parent="Theme.DBrain.Button">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/ttnormsregular</item>
+        <item name="android:background">@drawable/button_black_bg</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+</resources>

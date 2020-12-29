@@ -6,6 +6,7 @@ import android.util.Size
 import androidx.annotation.IntRange
 
 open class FlowType(
+    var name: String? = "default",
     var docType: Array<String>? = arrayOf(),
     var mode: String? = "default",
     var withHitl: Boolean? = null,
@@ -33,6 +34,7 @@ open class FlowType(
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
         parcel.createStringArray(),
         parcel.readString(),
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
@@ -49,12 +51,13 @@ open class FlowType(
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readInt(),
-        parcel.readSerializable() as HashMap<String, String>,
+        parcel.readSerializable() as? HashMap<String, String>,
         Size(parcel.readInt(), parcel.readInt()),
         parcel.readFloat()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
         parcel.writeStringArray(docType)
         parcel.writeString(mode)
         parcel.writeValue(withHitl)
@@ -71,7 +74,7 @@ open class FlowType(
         parcel.writeValue(async)
         parcel.writeValue(simpleCropper)
         parcel.writeInt(priority)
-        parcel.writeSerializable(verifyFields as HashMap<String, String>)
+        parcel.writeSerializable(verifyFields as? HashMap<String, String>)
         parcel.writeInt(bordersAspectRatio.width)
         parcel.writeInt(bordersAspectRatio.height)
         parcel.writeFloat(bordersSizeMultiplier)

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#aaa"
+    tools:context=".activities.ErrorActivity">
+
+    <LinearLayout
+        android:padding="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="24dp"
+            android:id="@+id/title_text_view"
+            android:textSize="56sp"
+            android:fontFamily="@font/ttnormsmedium"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content"
+            android:text="@string/cannot_recognize"/>
+
+        <TextView
+            android:lineSpacingMultiplier="1.3"
+            android:layout_marginTop="48dp"
+            android:id="@+id/descr_text_view"
+            android:textSize="24sp"
+            android:fontFamily="@font/ttnormsregular"
+            android:layout_width="wrap_content"
+            android:textColor="#fff"
+            android:layout_height="wrap_content"
+            android:text="@string/cannot_recognize_descr"/>
+
+        <TextView
+            android:id="@+id/button"
+            android:layout_marginTop="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Theme.DBrain.Button.Small.Black"
+            android:text="@string/go_to_start"/>
+
+    </LinearLayout>
+
+</ScrollView>

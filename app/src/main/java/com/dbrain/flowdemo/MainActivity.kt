@@ -1,23 +1,30 @@
 package com.dbrain.flowdemo
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import com.dbrain.flow.Status
-import com.dbrain.flow.common.NoResultException
-import com.dbrain.flow.flows.DriverLicenceFlow
-import com.dbrain.flow.flows.PassportFlow
+import com.dbrain.flow.flows.DocumentFlow
+import com.dbrain.flow.flows.FlowType
+import com.dbrain.flow.models.FlowClassifyResponse
+import com.dbrain.flowdemo.activities.ErrorActivity
+import com.dbrain.flowdemo.activities.ImagePreviewActivity
+import com.dbrain.flowdemo.activities.ImagePreviewActivity.Companion.ARG_FLOW_TYPE
+import com.dbrain.flowdemo.activities.RecognizeResultActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.BufferedOutputStream
 import java.io.File
-
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainActivityViewModel
-
-    private var photoFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,55 +33,74 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.loadingStatus.observe(this) {
             progress_bar?.isVisible = it == Status.LOADING
+            progress_description?.visibility = progress_bar?.visibility ?: View.GONE
+            take_pic_button?.isVisible = progress_bar?.visibility == View.GONE
         }
 
-        viewModel.state.observe(this) {
-            if (it.photoFile != null) {
-                // photo captured
-                showPicture(it.photoFile)
+        viewModel.events.observe(this) { event ->
+            event.handle {
+                when (event) {
+                    is PhotoTakenEvent -> viewModel.classify(this)
+                    is ClassifiedEvent -> {
+                        val croppedPhoto = extractCroppedImage(event.result)
+                        viewModel.setPhotoFile(croppedPhoto)
+                        ImagePreviewActivity.show(
+                            this,
+                            croppedPhoto,
+                            viewModel.getFlowType(),
+                            REQUEST_CODE_NEED_RECOGNIZE
+                        )
+                    }
+                    is RecognizedEvent -> RecognizeResultActivity.show(this, viewModel.getPhotoFile() ?: return@handle, event.result)
+                    is ErrorEvent -> ErrorActivity.show(this, event.throwable)
+                }
             }
-            if (it.result != null) {
-                // image recognized
-                result_text?.text = it.result.raw
-            }
-            if (it.error != null) {
-                // error occurred
-                result_text?.text = if (it.error is NoResultException) {
-                    it.result?.raw
-                } else it.error.stackTraceToString()
-            }
-            recognize_button?.isEnabled = it.photoFile != null
         }
 
         take_pic_button?.setOnClickListener {
-            viewModel.takePicture(
-                this, DriverLicenceFlow().apply {
-                    verifyFields = mapOf(
-                        "first_name" to "ФОМА"
-                    )
+            viewModel.setFlowType(DocumentFlow())
+            viewModel.takePicture(this)
+        }
+    }
+
+    private fun extractCroppedImage(result: FlowClassifyResponse): File {
+        if (result.items.isNullOrEmpty()) return viewModel.getPhotoFile()!!
+        val document = result.items?.get(0)?.crop ?: return viewModel.getPhotoFile()!!
+        val mediaDir = externalMediaDirs.firstOrNull()?.let { File(it, "DBrain").apply { mkdirs() } }
+        val dir = if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
+        val file = File(dir, SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US).format(System.currentTimeMillis()) + ".jpg")
+
+        var bos: BufferedOutputStream? = null
+        try {
+            val encodedImage = document
+                .replace("data:image/png;base64,", "")
+                .replace("data:image/jpeg;base64", "")
+
+            val decodedBitmap = Base64.decode(encodedImage, Base64.DEFAULT)
+            bos = BufferedOutputStream(FileOutputStream(file))
+            bos.write(decodedBitmap)
+            bos.flush()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        } finally {
+            bos?.close()
+        }
+        return file
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            REQUEST_CODE_NEED_RECOGNIZE -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val newFlowType = data.getParcelableExtra<FlowType>(ARG_FLOW_TYPE) ?: return
+                    viewModel.setFlowType(newFlowType)
+                    viewModel.recognize(this)
                 }
-            )
-        }
-        recognize_button?.setOnClickListener {
-            photoFile?.let { viewModel.recognize(this, it) }
+            }
         }
     }
 
-    private fun showPicture(file: File) {
-        this.photoFile = file
-        val options = BitmapFactory.Options()
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888
-        options.inSampleSize = calculateInSampleSize(options, 700, 700)
-        val bitmap = BitmapFactory.decodeFile(file.absolutePath, options)
-        image_view?.setImageBitmap(bitmap)
+    companion object {
+        private const val REQUEST_CODE_NEED_RECOGNIZE = 1
     }
-
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        val height = options.outHeight
-        val width = options.outWidth
-        val sWidth = Math.round(width.toFloat() / reqWidth.toFloat())
-        val sHeight = Math.round(height.toFloat() / reqHeight.toFloat())
-        return if (sWidth <= sHeight) sHeight else sWidth
-    }
-
 }

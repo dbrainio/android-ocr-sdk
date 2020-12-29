@@ -9,13 +9,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DBrain">
-        <activity android:name=".MainActivity">
+
+        <activity
+            android:name=".activities.ErrorActivity"
+            android:theme="@style/Theme.DBrain.Activity"/>
+
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.DBrain.Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.ImagePreviewActivity"
+            android:label="@string/classification"
+            android:theme="@style/Theme.DBrain.Activity.Light.ActionBar" />
+        <activity
+            android:name=".activities.RecognizeResultActivity"
+            android:label="@string/result"
+            android:theme="@style/Theme.DBrain.Activity.Light.ActionBar" />
+
     </application>
 
 </manifest>
