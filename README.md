@@ -18,7 +18,7 @@ allprojects {
 Step 2. Add the dependency
 ```gradle
 dependencies {
-  implementation 'com.github.dbrainio:android-ocr-sdk:v3'
+  implementation 'com.github.dbrainio:android-ocr-sdk:v3.1'
 }
 ```
 
@@ -45,10 +45,10 @@ class MyFlow : FlowType (
 )
 ```
 
-#### FlowResponse
+#### FlowRecognizeResponse
 Object obtained after the recognition success. Contains parsed data from the recognition result.
 ```kotlin
-data class FlowResponse(
+data class FlowRecognizeResponse(
     val detail: List<FlowDetail>?, // Document recognition details
     val items: List<FlowItem>?, // Recognized documents 
 
@@ -66,10 +66,10 @@ data class FlowResponse(
 ) 
 ```
 
-#### FlowItem
+#### FlowRecognizeItem
 Document fields holder.
 ```kotlin
-data class FlowItem(
+data class FlowRecognizeItem(
     val docType: String, // Document type
     val fields: List<FlowItemField>, // Document fields
     val color: Boolean, // Is document colored or not
@@ -77,10 +77,10 @@ data class FlowItem(
 )
 ```
 
-#### FlowItemField
+#### FlowRecognizeItemField
 Document field object.
 ```kotlin
-data class FlowItemField(
+data class FlowRecognizeItemField(
     val name: String, // Name of the field
     val text: String, // Text
     val confidence: Double?, // Accuracy
